@@ -2,7 +2,7 @@ _base_ = ['../_base_/default_runtime.py', '../_base_/det_p5_tta.py']
 
 # ========================Frequently modified parameters======================
 # -----data related-----
-data_root = 'data/coco/'  # Root path of data
+data_root = '/data/zhangzhihao/visdrone_coco/'  # Root path of data
 # Path of train annotation file
 train_ann_file = 'annotations/instances_train2017.json'
 train_data_prefix = 'train2017/'  # Prefix of train image path
@@ -10,7 +10,7 @@ train_data_prefix = 'train2017/'  # Prefix of train image path
 val_ann_file = 'annotations/instances_val2017.json'
 val_data_prefix = 'val2017/'  # Prefix of val image path
 
-num_classes = 80  # Number of classes for classification
+num_classes = 10  # Number of classes for classification
 # Batch size of a single GPU during training
 train_batch_size_per_gpu = 16
 # Worker to pre-fetch data for each single GPU during training
@@ -20,16 +20,23 @@ persistent_workers = True
 
 # -----model related-----
 # Basic size of multi-scale prior box
+'''
 anchors = [
     [(10, 13), (16, 30), (33, 23)],  # P3/8
     [(30, 61), (62, 45), (59, 119)],  # P4/16
     [(116, 90), (156, 198), (373, 326)]  # P5/32
 ]
+'''
+anchors = [
+    [(3, 5), (6, 5), (5, 11)],  # P3/8
+    [(11, 9), (10, 17), (21, 12)],  # P4/16
+    [(18, 25), (40, 21), (48, 49)]  # P5/32
+]
 
 # -----train val related-----
 # Base learning rate for optim_wrapper. Corresponding to 8xb16=128 bs
 base_lr = 0.01
-max_epochs = 300  # Maximum training epochs
+max_epochs = 150  # Maximum training epochs
 
 model_test_cfg = dict(
     # The config of multi-label for multi-class prediction.
@@ -279,7 +286,7 @@ custom_hooks = [
 
 val_evaluator = dict(
     type='mmdet.CocoMetric',
-    proposal_nums=(100, 1, 10),
+    proposal_nums=(300, 1, 20),  # coco数据集默认为(100, 1, 10)
     ann_file=data_root + val_ann_file,
     metric='bbox')
 test_evaluator = val_evaluator
